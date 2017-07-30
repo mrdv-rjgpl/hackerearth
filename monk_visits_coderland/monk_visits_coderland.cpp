@@ -10,6 +10,8 @@
 #include <iostream>
 #include <vector>
 
+#define MAX_PETROL_COST 100000
+
 using namespace std;
 
 /**
@@ -28,40 +30,26 @@ using namespace std;
  * \author Mardava Gubbi <mrdv.rjgpl@gmail.com>
  *
  */
-unsigned long long int GetMinPetrolCost(vector<int> petrol_costs, vector<int> req_petrol_amounts)
+unsigned long long int GetMinPetrolCost(
+		vector<unsigned long long int> petrol_costs,
+		vector<unsigned long long int> req_petrol_amounts)
 {
-	int cheapest_checkpoint;
 	int i;
 	int num_checkpoints = petrol_costs.size();
 	unsigned long long int total_cost = 0;
-	vector<unsigned long long int> min_petrol_costs;
-	vector<unsigned long long int> min_petrol_amt;
+	unsigned long long int min_petrol_cost;
 
-	/* Make the first petrol purchase at the first checkpoint, because there's no other option. */
-	cheapest_checkpoint = 0;
-	min_petrol_costs.push_back(petrol_costs[0]);
-	min_petrol_amt.push_back(req_petrol_amounts[0]);
+	min_petrol_cost = MAX_PETROL_COST;
 
-	/* Iterate from the next checkpoint onwards. */
-	for(i = 1; i < num_checkpoints; ++i)
+	for(i = 0; i < num_checkpoints; ++i)
 	{
-		if(petrol_costs[i] < min_petrol_costs[cheapest_checkpoint])
+		if(petrol_costs[i] < min_petrol_cost)
 		{
-			/* There's a new cheapest checkpoint on the map, so add it to the list. */
-			min_petrol_costs.push_back(petrol_costs[i]);
-			min_petrol_amt.push_back(req_petrol_amounts[i]);
-			++cheapest_checkpoint;
+			/* There's a new cheap checkpoint on the map, so drop the cost of petrol from this checkpoint onwards. */
+			min_petrol_cost = petrol_costs[i];
 		}
-		else
-		{
-			/* Buy this petrol at the cheapest checkpoint so far. */
-			min_petrol_amt[cheapest_checkpoint] += req_petrol_amounts[i];
-		}
-	}
 
-	for(i = 0; i <= cheapest_checkpoint; ++i)
-	{
-		total_cost += (min_petrol_costs[i] * min_petrol_amt[i]);
+		total_cost += (min_petrol_cost * req_petrol_amounts[i]);
 	}
 
 	return total_cost;
@@ -79,8 +67,8 @@ int main(int argc, char **argv)
 	for(i = 0; i < t; ++i)
 	{
 		cin >> n;
-		vector<int> c(n);
-		vector<int> l(n);
+		vector<unsigned long long int> c(n);
+		vector<unsigned long long int> l(n);
 
 		for(j = 0; j < n; ++j)
 		{
